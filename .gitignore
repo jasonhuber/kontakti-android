@@ -1,0 +1,3 @@
+# Android / React Native (shared codebase lives in iOS/)
+# This folder is a pointer — see iOS/ for the React Native project
+.DS_Store
