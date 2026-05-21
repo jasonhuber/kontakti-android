@@ -1,4 +1,4 @@
-# Konataki Android
+# Kontakti Android
 
 Android is delivered via React Native — the same codebase as the iOS app.
 
@@ -13,7 +13,7 @@ See [../iOS/README.md](../iOS/README.md) for the full mobile strategy.
 ## Setup
 
 ```bash
-# From iOS/KonatakiMobile/
+# From iOS/KontaktiMobile/
 npx react-native run-android
 ```
 
