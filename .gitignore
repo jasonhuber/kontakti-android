@@ -1,3 +1,13 @@
 # Android / React Native (shared codebase lives in iOS/)
 # This folder is a pointer — see iOS/ for the React Native project
 .DS_Store
+
+# Secrets (API keys — never commit)
+**/EnrichmentSecrets.kt
+
+# Android build artifacts
+KontaktiAndroid/.gradle/
+KontaktiAndroid/build/
+KontaktiAndroid/app/build/
+# Firebase config (per-developer; provision via your own Firebase console)
+KontaktiAndroid/app/google-services.json

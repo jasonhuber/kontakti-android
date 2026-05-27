@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Kontakti</string>
+    <string name="today_widget_description">Kontakti — your top reach-outs for today</string>
 </resources>

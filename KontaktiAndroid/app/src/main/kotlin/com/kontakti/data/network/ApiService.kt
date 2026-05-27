@@ -2,6 +2,9 @@ package com.kontakti.data.network
 
 import com.kontakti.data.contacts.ImportCandidate
 import com.kontakti.data.model.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.*
 
 interface ApiService {
@@ -33,6 +36,33 @@ interface ApiService {
 
     @GET("people/{id}/tasks")
     suspend fun getPersonTasks(@Path("id") id: String): List<Task>
+
+    @GET("people/{id}/notes")
+    suspend fun listPersonNotes(@Path("id") id: String): List<Note>
+
+    @PATCH("people/{id}")
+    suspend fun updatePerson(
+        @Path("id") id: String,
+        @Body patch: com.google.gson.JsonObject
+    ): Person
+
+    @POST("notes")
+    suspend fun createNote(@Body body: CreateNoteRequest): Note
+
+    @PATCH("notes/{id}")
+    suspend fun updateNote(
+        @Path("id") id: String,
+        @Body body: UpdateNoteRequest
+    ): Note
+
+    @DELETE("notes/{id}")
+    suspend fun deleteNote(@Path("id") id: String)
+
+    @POST("tasks")
+    suspend fun createTask(@Body body: CreateTaskRequest): Task
+
+    @PATCH("tasks/{id}/complete")
+    suspend fun completeTask(@Path("id") id: String): Task
 
     // Companies
     @GET("companies")
@@ -68,7 +98,132 @@ interface ApiService {
     @GET("search")
     suspend fun search(@Query("q") query: String): SearchResponse
 
+    @POST("people")
+    suspend fun createPerson(@Body req: CreatePersonRequest): Person
+
     // Contacts import
     @POST("contacts/import")
     suspend fun importContacts(@Body candidates: List<ImportCandidate>): ImportResult
+
+    @DELETE("people/{id}")
+    suspend fun deletePerson(@Path("id") id: String)
+
+    @POST("people/enrich")
+    suspend fun enrichPerson(@Body body: com.google.gson.JsonObject): Person
+
+    // Today inbox
+    @GET("today")
+    suspend fun getToday(@Query("limit") limit: Int = 10): TodayResponse
+
+    @POST("today/items/{key}/draft")
+    suspend fun draftTodayMessage(@Path("key") key: String): TodayDraftResponse
+
+    @POST("today/items/{key}/log")
+    suspend fun logTodayContact(
+        @Path("key") key: String,
+        @Body body: TodayLogRequest
+    ): TodayLogResponse
+
+    @POST("today/items/{key}/snooze")
+    suspend fun snoozeTodayItem(@Path("key") key: String)
+
+    @POST("today/items/{key}/skip")
+    suspend fun skipTodayItem(@Path("key") key: String)
+
+    // Daily quiz
+    @POST("quiz/{id}/answer")
+    suspend fun answerQuiz(
+        @Path("id") id: String,
+        @Body req: AnswerQuizRequest
+    ): AnswerQuizResponse
+
+    @POST("quiz/{id}/skip")
+    suspend fun skipQuiz(@Path("id") id: String): Response<Unit>
+
+    @GET("quiz/history")
+    suspend fun quizHistory(): List<ContactPrompt>
+
+    // Activity
+    @GET("people/{id}/activity")
+    suspend fun getPersonActivity(@Path("id") id: String): List<SocialActivity>
+
+    @POST("people/{id}/activity/refresh")
+    suspend fun refreshPersonActivity(@Path("id") id: String)
+
+    @POST("activity/{id}/acknowledge")
+    suspend fun acknowledgeActivity(@Path("id") id: String)
+
+    // Social groups
+    @GET("social-groups")
+    suspend fun listSocialGroups(): List<SocialGroup>
+
+    @POST("social-groups")
+    suspend fun createSocialGroup(@Body body: CreateSocialGroupRequest): SocialGroup
+
+    @POST("social-groups/{id}/sync")
+    suspend fun syncSocialGroup(@Path("id") id: String)
+
+    @DELETE("social-groups/{id}")
+    suspend fun deleteSocialGroup(@Path("id") id: String)
+
+    @GET("social-providers/facebook/groups")
+    suspend fun getFacebookGroups(): FacebookGroupsResponse
+
+    @GET("social-providers/whatsapp/status")
+    suspend fun getWhatsappStatus(): WhatsappStatus
+
+    @GET("social-providers/whatsapp/qr")
+    suspend fun getWhatsappQR(): WhatsappQR
+
+    @GET("social-providers/whatsapp/groups")
+    suspend fun getWhatsappGroups(): WhatsappGroupsResponse
+
+    // Duplicates
+    @GET("duplicates")
+    suspend fun listDuplicates(@Query("status") status: String = "pending"): List<DuplicateCandidate>
+
+    @POST("duplicates/scan")
+    suspend fun scanDuplicates()
+
+    @POST("duplicates/{id}/merge")
+    suspend fun mergeDuplicate(@Path("id") id: String, @Body body: MergeDuplicateRequest)
+
+    @POST("duplicates/{id}/dismiss")
+    suspend fun dismissDuplicate(@Path("id") id: String)
+
+    // Voice
+    @Multipart
+    @POST("voice/capture")
+    suspend fun captureVoice(
+        @Part audio: MultipartBody.Part,
+        @Part("person_id") personId: RequestBody? = null,
+        @Part("context") context: RequestBody? = null
+    ): VoiceCaptureResult
+
+    // Natural search
+    @POST("search/natural")
+    suspend fun searchNatural(@Body body: NaturalSearchRequest): NaturalSearchResponse
+
+    // Push
+    @POST("push/register")
+    suspend fun registerPush(@Body body: PushRegisterRequest)
+
+    @HTTP(method = "DELETE", path = "push/register", hasBody = true)
+    suspend fun unregisterPush(@Body body: PushUnregisterRequest)
+
+    // Google accounts
+    @GET("google-accounts")
+    suspend fun listGoogleAccounts(): List<GoogleAccount>
+
+    @POST("google-accounts/link")
+    suspend fun linkGoogleAccount(@Body body: LinkGoogleAccountRequest): GoogleAccount
+
+    @PATCH("google-accounts/{id}")
+    suspend fun updateGoogleAccount(
+        @Path("id") id: String,
+        @Body body: UpdateGoogleAccountRequest
+    ): GoogleAccount
+
+    @DELETE("google-accounts/{id}")
+    suspend fun unlinkGoogleAccount(@Path("id") id: String)
 }

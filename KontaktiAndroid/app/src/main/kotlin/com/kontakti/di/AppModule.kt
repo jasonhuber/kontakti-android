@@ -7,11 +7,14 @@ import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
+import com.kontakti.data.datastore.TokenStore
 import com.kontakti.data.local.KontaktiDao
 import com.kontakti.data.local.KontaktiDatabase
 import com.kontakti.data.model.DiscussionType
+import com.kontakti.data.model.QuestionKey
 import com.kontakti.data.model.RelationshipStrength
 import com.kontakti.data.model.TaskPriority
+import com.kontakti.data.model.TodayItemKind
 import com.kontakti.data.network.ApiService
 import dagger.Module
 import dagger.Provides
@@ -43,6 +46,8 @@ object AppModule {
         .registerTypeAdapter(RelationshipStrength::class.java, enumAdapter<RelationshipStrength>())
         .registerTypeAdapter(DiscussionType::class.java, enumAdapter<DiscussionType>())
         .registerTypeAdapter(TaskPriority::class.java, enumAdapter<TaskPriority>())
+        .registerTypeAdapter(QuestionKey::class.java, enumAdapter<QuestionKey>())
+        .registerTypeAdapter(TodayItemKind::class.java, enumAdapter<TodayItemKind>())
         .serializeNulls()
         .create()
 
@@ -87,4 +92,8 @@ object AppModule {
     @Singleton
     fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
         WorkManager.getInstance(context)
+
+    @Provides
+    @Singleton
+    fun provideTokenStore(@ApplicationContext context: Context): TokenStore = TokenStore(context)
 }

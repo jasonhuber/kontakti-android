@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -100,6 +101,17 @@ dependencies {
     implementation(libs.google.api.client.android)
     implementation(libs.google.api.gmail)
     implementation(libs.google.api.people)
+
+    // Firebase Cloud Messaging
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+
+    // Coil image loading
+    implementation(libs.coil.compose)
+
+    // Glance (Jetpack home-screen widgets)
+    implementation(libs.glance.appwidget)
+    implementation(libs.glance.material3)
 
     debugImplementation(libs.compose.ui.tooling)
 }

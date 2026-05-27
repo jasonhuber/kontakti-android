@@ -20,5 +20,7 @@ data class PersonEntity(
     @ColumnInfo(name = "relationship_strength") val relationshipStrength: String,
     @ColumnInfo(name = "last_contacted_at") val lastContactedAt: String?,
     @ColumnInfo(name = "next_followup_at") val nextFollowupAt: String?,
+    @ColumnInfo(name = "do_not_contact", defaultValue = "0") val doNotContact: Boolean = false,
+    @ColumnInfo(name = "do_not_contact_reason") val doNotContactReason: String? = null,
     @ColumnInfo(name = "updated_at") val updatedAt: String
 )
