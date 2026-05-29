@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -126,7 +128,7 @@ fun SettingsScreen(
             item { SettingsRow("Import contacts", Icons.Default.Contacts, onClick = onOpenImport) }
             item { SettingsRow("Social groups", Icons.Default.Group, onClick = onOpenGroups) }
             item { SettingsRow("Duplicates", Icons.Default.ContentCopy, onClick = onOpenDuplicates) }
-            item { SettingsRow("Review contacts", Icons.Default.FactCheck, onClick = onOpenReview) }
+            item { SettingsRow("Review contacts", Icons.AutoMirrored.Filled.FactCheck, onClick = onOpenReview) }
 
             item { SectionHeader("Notifications") }
             item {
@@ -146,7 +148,7 @@ fun SettingsScreen(
             }
 
             item { SectionHeader("Account") }
-            item { SettingsRow("Sign out", Icons.Default.ExitToApp, onClick = { vm.signOut(onSignedOut) }) }
+            item { SettingsRow("Sign out", Icons.AutoMirrored.Filled.ExitToApp, onClick = { vm.signOut(onSignedOut) }) }
             item { Spacer(Modifier.height(32.dp)) }
         }
     }

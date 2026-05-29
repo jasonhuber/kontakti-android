@@ -13,7 +13,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.MoveToInbox
 import androidx.compose.material.icons.filled.PersonOutline
@@ -48,8 +48,8 @@ private data class BucketEntry(val key: String, val label: String, val icon: Ima
 
 private val bucketOrder = listOf(
     BucketEntry("needs_review",         "Flagged on import",    Icons.Default.ErrorOutline),
-    BucketEntry("missing_first_name",   "Missing first name",   Icons.Default.HelpOutline),
-    BucketEntry("missing_last_name",    "Missing last name",    Icons.Default.HelpOutline),
+    BucketEntry("missing_first_name",   "Missing first name",   Icons.AutoMirrored.Filled.HelpOutline),
+    BucketEntry("missing_last_name",    "Missing last name",    Icons.AutoMirrored.Filled.HelpOutline),
     BucketEntry("missing_contact_info", "No email or phone",    Icons.Default.PersonOutline),
     BucketEntry("invalid_email",        "Suspect email",        Icons.Default.MailOutline),
     BucketEntry("duplicate_email",      "Duplicate emails",     Icons.Default.ContentCopy),

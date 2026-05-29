@@ -9,6 +9,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Chat
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -225,7 +228,7 @@ fun PersonDetailScreen(
             TopAppBar(
                 title = { Text(state.person?.fullName ?: "Person") },
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Back") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
                 },
                 actions = {
                     IconButton(onClick = { onEdit(personId) }) { Icon(Icons.Default.Edit, contentDescription = "Edit") }
@@ -281,9 +284,9 @@ fun PersonDetailScreen(
 
             // Quick actions
             Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-                QuickAction(Icons.Default.Notes, "Note") { showAddNote = true }
+                QuickAction(Icons.AutoMirrored.Filled.Notes, "Note") { showAddNote = true }
                 QuickAction(Icons.Default.Check, "Task") { showAddTask = true }
-                QuickAction(Icons.Default.Chat, "Discuss") { /* opens create discussion modal in future */ }
+                QuickAction(Icons.AutoMirrored.Filled.Chat, "Discuss") { /* opens create discussion modal in future */ }
                 QuickAction(Icons.Default.Schedule, "Follow") { /* TODO followup picker */ }
                 QuickAction(Icons.Default.Mic, "Voice") { /* opens voice recorder via global FAB */ }
             }

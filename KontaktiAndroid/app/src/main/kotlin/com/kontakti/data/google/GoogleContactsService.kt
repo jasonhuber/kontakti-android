@@ -120,11 +120,9 @@ class GoogleContactsService @Inject constructor(
             }
             if (!seen.add(email)) return@mapNotNull null
 
-            val name = if (emailMatch != null) {
-                header.substringBefore("<").trim().removeSurrounding("\"").trim()
-            } else {
-                header.trim()
-            }
+            // `email` is non-null here, so `emailMatch` matched — the display
+            // name is whatever precedes the `<…>` address.
+            val name = header.substringBefore("<").trim().removeSurrounding("\"").trim()
 
             if (name.isBlank() && email.isBlank()) return@mapNotNull null
 
