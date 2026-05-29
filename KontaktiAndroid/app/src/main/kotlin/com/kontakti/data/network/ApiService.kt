@@ -32,8 +32,15 @@ interface ApiService {
     @GET("people")
     suspend fun listPeople(
         @Query("q") query: String? = null,
-        @Query("page") page: Int = 1
+        @Query("page") page: Int = 1,
+        @Query("needs_review") needsReview: Boolean? = null
     ): Paginated<Person>
+
+    @GET("people/health")
+    suspend fun getPeopleHealth(): PeopleHealth
+
+    @POST("people/{id}/review")
+    suspend fun markPersonReviewed(@Path("id") id: String): Person
 
     @GET("people/{id}")
     suspend fun getPerson(@Path("id") id: String): Person

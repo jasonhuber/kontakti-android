@@ -44,6 +44,7 @@ import com.kontakti.ui.screens.people.PeopleListScreen
 import com.kontakti.ui.screens.people.PersonDetailScreen
 import com.kontakti.ui.screens.people.PersonEditScreen
 import com.kontakti.ui.screens.quiz.QuizSessionScreen
+import com.kontakti.ui.screens.review.ReviewContactsScreen
 import com.kontakti.ui.screens.search.NaturalSearchScreen
 import com.kontakti.ui.screens.settings.SettingsScreen
 import com.kontakti.ui.screens.today.TodayScreen
@@ -85,6 +86,7 @@ object Routes {
     const val GROUPS = "groups"
     const val GROUPS_IMPORT = "groups/import"
     const val DUPLICATES = "duplicates"
+    const val REVIEW_CONTACTS = "review/contacts"
 
     const val QUIZ = "quiz"
 
@@ -245,7 +247,8 @@ private fun MainNavigation(onSignedOut: () -> Unit) {
                     onOpenImport = { nav.navigate(Routes.IMPORT_PHONE) },
                     onLinkGoogle = { /* TODO: launch Google sign-in for new account */ },
                     onSignedOut = onSignedOut,
-                    onOpenActivity = { nav.navigate(Routes.FEED) }
+                    onOpenActivity = { nav.navigate(Routes.FEED) },
+                    onOpenReview = { nav.navigate(Routes.REVIEW_CONTACTS) }
                 )
             }
 
@@ -288,6 +291,9 @@ private fun MainNavigation(onSignedOut: () -> Unit) {
             }
             composable(Routes.DUPLICATES) {
                 DuplicatesScreen(onBack = { nav.popBackStack() })
+            }
+            composable(Routes.REVIEW_CONTACTS) {
+                ReviewContactsScreen(onBack = { nav.popBackStack() })
             }
 
             composable(Routes.QUIZ) {

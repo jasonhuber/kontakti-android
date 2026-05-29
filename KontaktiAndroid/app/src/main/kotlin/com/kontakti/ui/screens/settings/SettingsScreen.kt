@@ -91,6 +91,7 @@ fun SettingsScreen(
     fcmTokenProvider: () -> String? = { null },
     onSignedOut: () -> Unit = {},
     onOpenActivity: () -> Unit = {},
+    onOpenReview: () -> Unit = {},
     vm: SettingsViewModel = hiltViewModel()
 ) {
     val accounts by vm.accounts.collectAsState()
@@ -125,6 +126,7 @@ fun SettingsScreen(
             item { SettingsRow("Import contacts", Icons.Default.Contacts, onClick = onOpenImport) }
             item { SettingsRow("Social groups", Icons.Default.Group, onClick = onOpenGroups) }
             item { SettingsRow("Duplicates", Icons.Default.ContentCopy, onClick = onOpenDuplicates) }
+            item { SettingsRow("Review contacts", Icons.Default.FactCheck, onClick = onOpenReview) }
 
             item { SectionHeader("Notifications") }
             item {

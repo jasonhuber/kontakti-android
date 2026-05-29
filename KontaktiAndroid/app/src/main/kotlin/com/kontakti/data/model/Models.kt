@@ -503,6 +503,35 @@ data class ImportResult(
     val skipped: Int
 )
 
+// ── People health (Contact Review) ───────────────────────────────────────────
+
+data class PeopleHealth(
+    val total: Int,
+    val buckets: Map<String, HealthBucket> = emptyMap()
+)
+
+data class HealthBucket(
+    val count: Int,
+    val samples: List<HealthSample> = emptyList()
+)
+
+data class HealthSample(
+    val id: String,
+    @SerializedName("first_name") val firstName: String? = null,
+    @SerializedName("last_name") val lastName: String? = null,
+    val email: String? = null
+) {
+    val displayName: String
+        get() {
+            val combined = listOfNotNull(firstName, lastName)
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .joinToString(" ")
+            if (combined.isNotEmpty()) return combined
+            return email ?: "Unnamed contact"
+        }
+}
+
 data class CreateCompanyRequest(
     val name: String,
     val domain: String? = null,
