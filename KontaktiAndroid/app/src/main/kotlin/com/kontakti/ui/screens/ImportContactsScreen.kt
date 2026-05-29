@@ -75,7 +75,7 @@ class ImportContactsViewModel @Inject constructor(
         viewModelScope.launch {
             _loading.value = true
             try {
-                val result = api.importContacts(toImport)
+                val result = api.importContacts(com.kontakti.data.contacts.BulkImportRequest(contacts = toImport))
                 peopleRepo.refresh()
                 _importResult.value = "Imported ${result.imported}, skipped ${result.skipped}"
             } catch (e: Exception) {

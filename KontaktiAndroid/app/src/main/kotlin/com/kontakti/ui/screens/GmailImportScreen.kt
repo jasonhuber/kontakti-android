@@ -105,7 +105,7 @@ class GmailImportViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = State.IMPORTING
             try {
-                val result = api.importContacts(toImport)
+                val result = api.importContacts(com.kontakti.data.contacts.BulkImportRequest(contacts = toImport))
                 peopleRepo.refresh()
                 _message.value = "Imported ${result.imported}, skipped ${result.skipped}"
                 _uiState.value = State.DONE

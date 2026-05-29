@@ -102,7 +102,15 @@ class DeviceContactsImporter @Inject constructor(
 
         return results.values
             .filter { it.name.isNotBlank() }
-            .map { ImportCandidate(it.name, it.email, it.phone, it.company) }
+            .mapNotNull {
+                ImportCandidate.fromDisplayName(
+                    displayName = it.name,
+                    email = it.email,
+                    phone = it.phone,
+                    company = it.company,
+                    source = "device"
+                )
+            }
     }
 
     private data class MutableContact(

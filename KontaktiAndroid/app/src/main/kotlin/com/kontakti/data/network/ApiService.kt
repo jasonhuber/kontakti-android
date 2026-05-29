@@ -1,5 +1,6 @@
 package com.kontakti.data.network
 
+import com.kontakti.data.contacts.BulkImportRequest
 import com.kontakti.data.contacts.ImportCandidate
 import com.kontakti.data.model.*
 import okhttp3.MultipartBody
@@ -147,7 +148,7 @@ interface ApiService {
 
     // Contacts import
     @POST("contacts/import")
-    suspend fun importContacts(@Body candidates: List<ImportCandidate>): ImportResult
+    suspend fun importContacts(@Body body: BulkImportRequest): ImportResult
 
     @DELETE("people/{id}")
     suspend fun deletePerson(@Path("id") id: String)

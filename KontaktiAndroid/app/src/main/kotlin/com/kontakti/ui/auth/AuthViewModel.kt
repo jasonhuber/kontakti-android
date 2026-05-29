@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -18,13 +19,14 @@ import javax.inject.Inject
 sealed class AuthState {
     object Loading : AuthState()
     object SignedOut : AuthState()
+    object NeedsOnboarding : AuthState()
     data class SignedIn(val user: UserProfile?) : AuthState()
 }
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repo: AuthRepository,
-    tokenStore: TokenStore
+    private val tokenStore: TokenStore
 ) : ViewModel() {
 
     /** True while the initial token check is happening. */
@@ -34,13 +36,18 @@ class AuthViewModel @Inject constructor(
     private val _user = MutableStateFlow<UserProfile?>(null)
     val user: StateFlow<UserProfile?> = _user.asStateFlow()
 
-    val state: StateFlow<AuthState> = tokenStore.tokenFlow
-        .map { token ->
-            if (_bootstrapping.value && token == null) AuthState.Loading
-            else if (token.isNullOrBlank()) AuthState.SignedOut
-            else AuthState.SignedIn(_user.value)
+    val state: StateFlow<AuthState> = combine(
+        tokenStore.tokenFlow,
+        tokenStore.onboardedFlow,
+        _user
+    ) { token, locallyOnboarded, user ->
+        when {
+            _bootstrapping.value && token == null -> AuthState.Loading
+            token.isNullOrBlank() -> AuthState.SignedOut
+            locallyOnboarded || user?.hasCompletedOnboarding == true -> AuthState.SignedIn(user)
+            else -> AuthState.NeedsOnboarding
         }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AuthState.Loading)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AuthState.Loading)
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage.asStateFlow()
@@ -98,7 +105,17 @@ class AuthViewModel @Inject constructor(
     fun logout() {
         viewModelScope.launch {
             repo.logout()
+            tokenStore.clearOnboarded()
             _user.value = null
+        }
+    }
+
+    fun completeOnboarding() {
+        viewModelScope.launch {
+            tokenStore.markOnboarded()
+            runCatching { repo.completeOnboarding() }
+                .getOrNull()
+                ?.let { _user.value = it }
         }
     }
 }

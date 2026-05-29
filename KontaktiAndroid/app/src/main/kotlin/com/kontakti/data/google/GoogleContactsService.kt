@@ -56,13 +56,15 @@ class GoogleContactsService @Inject constructor(
                     ?: person.names?.firstOrNull()?.let { n ->
                         "${n.givenName.orEmpty()} ${n.familyName.orEmpty()}".trim()
                     }
-                if (name.isNullOrBlank()) return@mapNotNull null
+                    ?: return@mapNotNull null
+                if (name.isBlank()) return@mapNotNull null
 
-                ImportCandidate(
-                    name = name,
+                ImportCandidate.fromDisplayName(
+                    displayName = name,
                     email = person.emailAddresses?.firstOrNull()?.value,
                     phone = person.phoneNumbers?.firstOrNull()?.value,
-                    company = person.organizations?.firstOrNull()?.name
+                    company = person.organizations?.firstOrNull()?.name,
+                    source = "google_contacts"
                 )
             }
         } catch (_: Exception) {
@@ -126,11 +128,10 @@ class GoogleContactsService @Inject constructor(
 
             if (name.isBlank() && email.isBlank()) return@mapNotNull null
 
-            ImportCandidate(
-                name = name.ifBlank { email },
+            ImportCandidate.fromDisplayName(
+                displayName = name.ifBlank { email },
                 email = email.ifBlank { null },
-                phone = null,
-                company = null
+                source = "gmail"
             )
         }
     }

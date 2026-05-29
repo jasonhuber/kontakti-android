@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.kontakti.ui.auth.AuthState
 import com.kontakti.ui.auth.AuthViewModel
 import com.kontakti.ui.auth.LoginScreen
+import com.kontakti.ui.auth.OnboardingScreen
 import com.kontakti.ui.screens.GmailImportScreen
 import com.kontakti.ui.screens.ImportContactsScreen
 import com.kontakti.ui.screens.LinkedInImportScreen
@@ -122,6 +123,7 @@ fun KontaktiAppRoot(authVm: AuthViewModel = hiltViewModel()) {
             }
         }
         is AuthState.SignedOut -> LoginScreen(vm = authVm)
+        is AuthState.NeedsOnboarding -> OnboardingScreen(onComplete = { authVm.completeOnboarding() })
         is AuthState.SignedIn -> MainNavigation(onSignedOut = { authVm.logout() })
     }
 }
