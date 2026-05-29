@@ -153,7 +153,13 @@ private fun MainNavigation(onSignedOut: () -> Unit) {
                                 }
                             },
                             icon = { Icon(item.icon, contentDescription = item.label) },
-                            label = { Text(item.label) }
+                            label = {
+                                Text(
+                                    item.label,
+                                    maxLines = 1,
+                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                )
+                            }
                         )
                     }
                 }

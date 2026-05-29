@@ -64,12 +64,14 @@ fun PeopleListScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("People") })
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddPerson) {
-                Icon(Icons.Default.Add, contentDescription = "Add person")
-            }
+            TopAppBar(
+                title = { Text("People") },
+                actions = {
+                    IconButton(onClick = onAddPerson) {
+                        Icon(Icons.Default.Add, contentDescription = "Add person")
+                    }
+                }
+            )
         }
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {

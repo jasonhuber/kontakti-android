@@ -82,11 +82,15 @@ fun DiscussionsListScreen(
     val query by vm.query.collectAsState()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Discussions") }) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onLogDiscussion) {
-                Icon(Icons.Default.Add, contentDescription = "Log discussion")
-            }
+        topBar = {
+            TopAppBar(
+                title = { Text("Discussions") },
+                actions = {
+                    IconButton(onClick = onLogDiscussion) {
+                        Icon(Icons.Default.Add, contentDescription = "Log discussion")
+                    }
+                }
+            )
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {

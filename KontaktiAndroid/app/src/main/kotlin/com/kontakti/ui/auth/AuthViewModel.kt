@@ -39,10 +39,11 @@ class AuthViewModel @Inject constructor(
     val state: StateFlow<AuthState> = combine(
         tokenStore.tokenFlow,
         tokenStore.onboardedFlow,
-        _user
-    ) { token, locallyOnboarded, user ->
+        _user,
+        _bootstrapping
+    ) { token, locallyOnboarded, user, bootstrapping ->
         when {
-            _bootstrapping.value && token == null -> AuthState.Loading
+            bootstrapping && token == null -> AuthState.Loading
             token.isNullOrBlank() -> AuthState.SignedOut
             locallyOnboarded || user?.hasCompletedOnboarding == true -> AuthState.SignedIn(user)
             else -> AuthState.NeedsOnboarding

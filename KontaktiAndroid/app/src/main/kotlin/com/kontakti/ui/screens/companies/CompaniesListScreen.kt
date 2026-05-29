@@ -66,11 +66,15 @@ fun CompaniesListScreen(
     val query by vm.query.collectAsState()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Companies") }) },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddCompany) {
-                Icon(Icons.Default.Add, contentDescription = "Add company")
-            }
+        topBar = {
+            TopAppBar(
+                title = { Text("Companies") },
+                actions = {
+                    IconButton(onClick = onAddCompany) {
+                        Icon(Icons.Default.Add, contentDescription = "Add company")
+                    }
+                }
+            )
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {

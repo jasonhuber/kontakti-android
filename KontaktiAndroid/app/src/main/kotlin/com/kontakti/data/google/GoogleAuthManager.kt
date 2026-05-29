@@ -2,6 +2,7 @@ package com.kontakti.data.google
 
 import android.app.Activity
 import android.content.Context
+import com.google.android.gms.auth.GoogleAuthUtil
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -26,11 +27,6 @@ class GoogleAuthManager @Inject constructor(
         val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestEmail()
             .requestScopes(GMAIL_SCOPE, CONTACTS_SCOPE)
-            .requestServerAuthCode(
-                /* serverClientId — set your OAuth 2.0 web client ID here */
-                "YOUR_WEB_CLIENT_ID",
-                /* forceCodeForRefreshToken */ true
-            )
             .build()
         return GoogleSignIn.getClient(context, options)
     }
@@ -39,15 +35,22 @@ class GoogleAuthManager @Inject constructor(
     fun getSignInIntent() = buildClient().signInIntent
 
     /**
-     * Called with the result Intent from the sign-in flow.
-     * Returns the access token on success, null on failure/cancellation.
+     * Resolves the sign-in result, then exchanges the bound Google account for
+     * a real OAuth 2.0 access token via [GoogleAuthUtil]. The returned token is
+     * usable directly against the People / Gmail APIs.
+     *
+     * Returns null on failure/cancellation. The exchange happens off the main
+     * thread.
      */
     suspend fun handleSignInResult(data: android.content.Intent?): String? =
         withContext(Dispatchers.IO) {
             try {
-                val account: GoogleSignInAccount =
+                val signed: GoogleSignInAccount =
                     GoogleSignIn.getSignedInAccountFromIntent(data).await()
-                account.serverAuthCode // exchange for access token server-side, or use directly
+                val account = signed.account ?: return@withContext null
+                val scopeString =
+                    "oauth2:${CONTACTS_SCOPE.scopeUri} ${GMAIL_SCOPE.scopeUri}"
+                GoogleAuthUtil.getToken(context, account, scopeString)
             } catch (_: Exception) {
                 null
             }
