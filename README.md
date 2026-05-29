@@ -1,41 +1,23 @@
 # Kontakti Android
 
-Android is delivered via the shared React Native project — the same codebase as iOS.
+This is a thin pointer. The actual Gradle project lives one level down at [`KontaktiAndroid/`](./KontaktiAndroid/), and its README is the canonical setup guide.
 
-**React Native project location:** `../iOS/KontaktiMobile`
+## Quick links
 
-## Build Commands
+- 🤖 [Android app README](./KontaktiAndroid/README.md) — stack, setup, build commands
+- 📋 [Project HANDOFF](./HANDOFF.md) — architecture, deploy, cross-platform context
+- 🛣️ [NEXT_STEPS](./NEXT_STEPS.md) — active work
+- 📜 [CHANGELOG](./CHANGELOG.md) — per-commit history
+
+## Build (one-liner)
 
 ```bash
-# Navigate to the React Native project root
-cd ../iOS/KontaktiMobile
-
-# Install dependencies (first time only)
-npm install
-
-# Start the Metro bundler
-npm start
-
-# Run on Android device/emulator
-npm run android
-# or directly:
-npx react-native run-android
-
-# Run on iOS simulator
-npm run ios
-# or directly:
-npx react-native run-ios
+cd KontaktiAndroid
+JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" \
+ANDROID_HOME="$HOME/Library/Android/sdk" \
+  ./gradlew :app:assembleDebug --no-daemon
 ```
 
-## Android-Specific Notes
+## Note
 
-- React Native 0.73.6, targets Android 7.0+ (API 24+)
-- Requires Android Studio with SDK Platform 33+ and an emulator or connected device
-- The Android build files live under `../iOS/KontaktiMobile/android/`
-- Same API client, auth store, navigation, and screens as iOS — zero platform-specific code
-
-## Backend
-
-Connect to the Laravel 11 API at `http://10.0.2.2:8000/api/v1` when running in an Android emulator
-(Android emulator routes `10.0.2.2` to the host machine's `localhost`).
-Update `BASE_URL` in `../iOS/KontaktiMobile/src/api/api.ts` accordingly when targeting Android.
+The earlier React Native plan (a shared codebase with iOS) was abandoned. Android and iOS are independent native apps that consume the same backend API. The earlier wrapper file's `npm run android` instructions were obsolete.
