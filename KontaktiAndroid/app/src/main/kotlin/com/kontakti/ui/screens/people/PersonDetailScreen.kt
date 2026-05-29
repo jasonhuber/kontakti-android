@@ -275,6 +275,10 @@ fun PersonDetailScreen(
                 RelationshipStrengthBadge(person.relationshipStrength)
             }
 
+            // Photo gallery — read-only here; the editable variant lives on
+            // PersonEditScreen. Renders nothing when the person has no photos.
+            PhotoGallery(personId = personId, editable = false)
+
             // Quick actions
             Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                 QuickAction(Icons.Default.Notes, "Note") { showAddNote = true }

@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kontakti.data.model.*
 import com.kontakti.data.repository.PeopleRepository
+import com.kontakti.ui.components.PhotoGallery
 import com.kontakti.ui.components.SectionHeader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -228,6 +229,9 @@ fun PersonEditScreen(
         }
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
+            SectionHeader("Photos")
+            PhotoGallery(personId = personId, editable = true)
+
             SectionHeader("Basics")
             FieldRow("First name", firstName) { firstName = it }
             FieldRow("Last name", lastName) { lastName = it }

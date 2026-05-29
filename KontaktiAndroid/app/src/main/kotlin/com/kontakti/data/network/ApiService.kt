@@ -12,6 +12,15 @@ interface ApiService {
     @POST("auth/login")
     suspend fun login(@Body req: LoginRequest): LoginResponse
 
+    @POST("auth/register")
+    suspend fun register(@Body req: RegisterRequest): LoginResponse
+
+    @POST("auth/google")
+    suspend fun loginWithGoogle(@Body req: GoogleLoginRequest): LoginResponse
+
+    @POST("auth/onboarding/complete")
+    suspend fun completeOnboarding(): UserProfile
+
     @POST("auth/logout")
     suspend fun logout()
 
@@ -100,6 +109,38 @@ interface ApiService {
 
     @POST("people")
     suspend fun createPerson(@Body req: CreatePersonRequest): Person
+
+    // Person photos (multi-photo gallery)
+    @GET("people/{id}/photos")
+    suspend fun listPhotos(@Path("id") id: String): List<PersonPhoto>
+
+    /** Uploads a real image file. Accepts the same `source` values as the JSON variant. */
+    @Multipart
+    @POST("people/{id}/photos")
+    suspend fun uploadPhotoMultipart(
+        @Path("id") id: String,
+        @Part file: MultipartBody.Part,
+        @Part("source") source: RequestBody? = null
+    ): PersonPhoto
+
+    /** Uploads a data-URL (clipboard paste) or external URL pointer (LinkedIn CDN). */
+    @POST("people/{id}/photos")
+    suspend fun uploadPhotoJson(
+        @Path("id") id: String,
+        @Body body: PhotoUploadBody
+    ): PersonPhoto
+
+    @DELETE("people/{id}/photos/{photoId}")
+    suspend fun deletePhoto(
+        @Path("id") id: String,
+        @Path("photoId") photoId: String
+    )
+
+    @POST("people/{id}/photos/{photoId}/primary")
+    suspend fun setPrimaryPhoto(
+        @Path("id") id: String,
+        @Path("photoId") photoId: String
+    ): PersonPhoto
 
     // Contacts import
     @POST("contacts/import")

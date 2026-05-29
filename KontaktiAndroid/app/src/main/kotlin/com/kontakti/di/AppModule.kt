@@ -21,6 +21,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -53,15 +54,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideOkHttp(@ApplicationContext context: Context): OkHttpClient {
-        // Token injected lazily via the TokenStore — wire at call-site if needed
+    fun provideOkHttp(tokenStore: TokenStore): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor { chain ->
-                chain.proceed(
-                    chain.request().newBuilder()
-                        .addHeader("Accept", "application/json")
-                        .build()
-                )
+                val token = kotlinx.coroutines.runBlocking { tokenStore.tokenFlow.first() }
+                val builder = chain.request().newBuilder()
+                    .addHeader("Accept", "application/json")
+                if (!token.isNullOrBlank()) {
+                    builder.addHeader("Authorization", "Bearer $token")
+                }
+                chain.proceed(builder.build())
             }
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY

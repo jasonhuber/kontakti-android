@@ -9,5 +9,7 @@
 KontaktiAndroid/.gradle/
 KontaktiAndroid/build/
 KontaktiAndroid/app/build/
+# Per-machine SDK path
+KontaktiAndroid/local.properties
 # Firebase config (per-developer; provision via your own Firebase console)
 KontaktiAndroid/app/google-services.json

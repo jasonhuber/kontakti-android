@@ -90,6 +90,7 @@ fun SettingsScreen(
     onLinkGoogle: () -> Unit,
     fcmTokenProvider: () -> String? = { null },
     onSignedOut: () -> Unit = {},
+    onOpenActivity: () -> Unit = {},
     vm: SettingsViewModel = hiltViewModel()
 ) {
     val accounts by vm.accounts.collectAsState()
@@ -120,6 +121,7 @@ fun SettingsScreen(
             }
 
             item { SectionHeader("Data") }
+            item { SettingsRow("Activity feed", Icons.Default.Inbox, onClick = onOpenActivity) }
             item { SettingsRow("Import contacts", Icons.Default.Contacts, onClick = onOpenImport) }
             item { SettingsRow("Social groups", Icons.Default.Group, onClick = onOpenGroups) }
             item { SettingsRow("Duplicates", Icons.Default.ContentCopy, onClick = onOpenDuplicates) }

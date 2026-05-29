@@ -4,7 +4,23 @@ import com.google.gson.annotations.SerializedName
 
 data class LoginRequest(val email: String, val password: String)
 data class LoginResponse(val token: String, val user: UserProfile)
-data class UserProfile(val id: String, val name: String, val email: String, val username: String?)
+data class UserProfile(
+    val id: String,
+    val name: String,
+    val email: String,
+    val username: String?,
+    @SerializedName("has_completed_onboarding") val hasCompletedOnboarding: Boolean? = null
+)
+
+data class RegisterRequest(
+    val name: String,
+    val username: String,
+    val email: String,
+    val password: String,
+    @SerializedName("password_confirmation") val passwordConfirmation: String
+)
+
+data class GoogleLoginRequest(@SerializedName("id_token") val idToken: String)
 
 data class Tag(val id: String, val name: String, val slug: String, val color: String)
 
@@ -41,6 +57,7 @@ data class Person(
     @SerializedName("how_we_met") val howWeMet: String? = null,
     @SerializedName("introduced_by_id") val introducedById: String? = null,
     @SerializedName("avatar_url") val avatarUrl: String?,
+    val photos: List<PersonPhoto>? = null,
     @SerializedName("company_id") val companyId: String?,
     val company: Company?,
     val title: String?,
@@ -65,6 +82,30 @@ data class PersonEmail(
     val value: String,
     val label: String? = "personal",
     @SerializedName("is_primary") val isPrimary: Boolean = false
+)
+
+/**
+ * A photo attached to a Person. The `url` is either an absolute external URL
+ * (e.g. `https://media.licdn.com/...`) or a relative path like
+ * `/photos/<personId>/<uuid>.<ext>` that needs to be prefixed with the API
+ * host before loading.
+ */
+data class PersonPhoto(
+    val id: String,
+    @SerializedName("person_id") val personId: String,
+    val url: String,
+    val source: String? = null,
+    @SerializedName("is_primary") val isPrimary: Boolean = false,
+    @SerializedName("sort_order") val sortOrder: Int = 0,
+    @SerializedName("created_at") val createdAt: String? = null,
+    @SerializedName("updated_at") val updatedAt: String? = null
+)
+
+/** JSON body for uploading a photo via data URL or external URL pointer. */
+data class PhotoUploadBody(
+    val data: String? = null,
+    val url: String? = null,
+    val source: String? = null
 )
 
 data class PersonPhone(

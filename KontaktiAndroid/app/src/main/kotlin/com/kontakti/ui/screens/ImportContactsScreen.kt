@@ -214,7 +214,7 @@ fun ImportContactsScreen(
 }
 
 @Composable
-private fun CandidateRow(
+internal fun CandidateRow(
     candidate: ImportCandidate,
     checked: Boolean,
     onToggle: () -> Unit
