@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -73,7 +72,6 @@ class DiscussionsListViewModel @Inject constructor(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiscussionsListScreen(
-    onBack: () -> Unit,
     onOpenDiscussion: (String) -> Unit,
     onLogDiscussion: () -> Unit,
     vm: DiscussionsListViewModel = hiltViewModel()
@@ -84,20 +82,11 @@ fun DiscussionsListScreen(
     val query by vm.query.collectAsState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Discussions") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onLogDiscussion) {
-                        Icon(Icons.Default.Add, contentDescription = "Log discussion")
-                    }
-                }
-            )
+        topBar = { TopAppBar(title = { Text("Discussions") }) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onLogDiscussion) {
+                Icon(Icons.Default.Add, contentDescription = "Log discussion")
+            }
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {

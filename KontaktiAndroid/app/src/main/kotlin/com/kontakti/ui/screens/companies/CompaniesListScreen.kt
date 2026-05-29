@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -58,23 +58,19 @@ class CompaniesViewModel @Inject constructor(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompaniesListScreen(
-    onBack: () -> Unit,
     onOpenCompany: (String) -> Unit,
+    onAddCompany: () -> Unit,
     vm: CompaniesViewModel = hiltViewModel()
 ) {
     val items by vm.companies.collectAsState()
     val query by vm.query.collectAsState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Companies") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
+        topBar = { TopAppBar(title = { Text("Companies") }) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onAddCompany) {
+                Icon(Icons.Default.Add, contentDescription = "Add company")
+            }
         }
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {

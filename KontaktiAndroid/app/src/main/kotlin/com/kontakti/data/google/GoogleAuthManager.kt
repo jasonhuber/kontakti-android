@@ -7,6 +7,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
+import com.kontakti.BuildConfig
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
@@ -47,6 +48,35 @@ class GoogleAuthManager @Inject constructor(
                 val account: GoogleSignInAccount =
                     GoogleSignIn.getSignedInAccountFromIntent(data).await()
                 account.serverAuthCode // exchange for access token server-side, or use directly
+            } catch (_: Exception) {
+                null
+            }
+        }
+
+    /**
+     * Variant configured for backend identity verification: requests an
+     * `id_token` minted by the Google OAuth web client whose ID is supplied at
+     * build time via `kontakti.google.web_client_id` in `local.properties`.
+     * The backend `/auth/google` route verifies that token; we do not need
+     * email/contacts scopes for login itself.
+     */
+    private fun buildLoginClient(): GoogleSignInClient {
+        val options = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestEmail()
+            .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
+            .build()
+        return GoogleSignIn.getClient(context, options)
+    }
+
+    fun getLoginSignInIntent() = buildLoginClient().signInIntent
+
+    /** Returns the Google id_token, or null on failure/cancellation. */
+    suspend fun handleLoginSignInResult(data: android.content.Intent?): String? =
+        withContext(Dispatchers.IO) {
+            try {
+                val account: GoogleSignInAccount =
+                    GoogleSignIn.getSignedInAccountFromIntent(data).await()
+                account.idToken
             } catch (_: Exception) {
                 null
             }

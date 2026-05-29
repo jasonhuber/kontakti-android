@@ -28,10 +28,12 @@ import com.kontakti.ui.auth.LoginScreen
 import com.kontakti.ui.screens.GmailImportScreen
 import com.kontakti.ui.screens.ImportContactsScreen
 import com.kontakti.ui.screens.LinkedInImportScreen
+import com.kontakti.ui.screens.companies.AddCompanyScreen
 import com.kontakti.ui.screens.companies.CompaniesListScreen
 import com.kontakti.ui.screens.companies.CompanyDetailScreen
 import com.kontakti.ui.screens.discussions.DiscussionDetailScreen
 import com.kontakti.ui.screens.discussions.DiscussionsListScreen
+import com.kontakti.ui.screens.discussions.LogDiscussionScreen
 import com.kontakti.ui.screens.duplicates.DuplicatesScreen
 import com.kontakti.ui.screens.feed.FeedScreen
 import com.kontakti.ui.screens.groups.GroupImportWizard
@@ -75,7 +77,9 @@ object Routes {
     const val PERSON_ADD = "person/add"
 
     const val COMPANY_DETAIL = "company/{companyId}"
+    const val COMPANY_ADD = "company/add"
     const val DISCUSSION_DETAIL = "discussion/{discussionId}"
+    const val DISCUSSION_LOG = "discussion/log"
 
     const val GROUPS = "groups"
     const val GROUPS_IMPORT = "groups/import"
@@ -180,8 +184,8 @@ private fun MainNavigation(onSignedOut: () -> Unit) {
             }
             composable(Routes.COMPANIES) {
                 CompaniesListScreen(
-                    onBack = { nav.popBackStack() },
-                    onOpenCompany = { nav.navigate(Routes.companyDetail(it)) }
+                    onOpenCompany = { nav.navigate(Routes.companyDetail(it)) },
+                    onAddCompany = { nav.navigate(Routes.COMPANY_ADD) }
                 )
             }
             composable(
@@ -193,11 +197,19 @@ private fun MainNavigation(onSignedOut: () -> Unit) {
                     onOpenPerson = { nav.navigate(Routes.personDetail(it)) }
                 )
             }
+            composable(Routes.COMPANY_ADD) {
+                AddCompanyScreen(
+                    onBack = { nav.popBackStack() },
+                    onCreated = { id ->
+                        nav.popBackStack()
+                        nav.navigate(Routes.companyDetail(id))
+                    }
+                )
+            }
             composable(Routes.DISCUSSIONS) {
                 DiscussionsListScreen(
-                    onBack = { nav.popBackStack() },
                     onOpenDiscussion = { nav.navigate(Routes.discussionDetail(it)) },
-                    onLogDiscussion = { /* TODO: navigate to LogDiscussionScreen */ }
+                    onLogDiscussion = { nav.navigate(Routes.DISCUSSION_LOG) }
                 )
             }
             composable(
@@ -207,6 +219,12 @@ private fun MainNavigation(onSignedOut: () -> Unit) {
                 DiscussionDetailScreen(
                     onBack = { nav.popBackStack() },
                     onOpenPerson = { nav.navigate(Routes.personDetail(it)) }
+                )
+            }
+            composable(Routes.DISCUSSION_LOG) {
+                LogDiscussionScreen(
+                    onBack = { nav.popBackStack() },
+                    onCreated = { nav.popBackStack() }
                 )
             }
             composable(Routes.FEED) {

@@ -1,5 +1,7 @@
 package com.kontakti.ui.auth
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -7,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -21,6 +25,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kontakti.data.google.GoogleAuthManager
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.launch
 
 private val Indigo = Color(0xFF4F46E5)
@@ -162,6 +171,74 @@ private fun SignInForm(
     ) {
         Text("Create account", color = Indigo, fontWeight = FontWeight.SemiBold)
     }
+
+    Spacer(modifier = Modifier.height(20.dp))
+    OrDivider()
+    Spacer(modifier = Modifier.height(16.dp))
+    GoogleSignInButton(vm = vm)
+}
+
+@Composable
+private fun OrDivider() {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        HorizontalDivider(modifier = Modifier.weight(1f))
+        Text(
+            "  or  ",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+        )
+        HorizontalDivider(modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun GoogleSignInButton(vm: AuthViewModel) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var isLoading by remember { mutableStateOf(false) }
+
+    val authManager = remember(context) {
+        EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            GoogleAuthEntryPoint::class.java
+        ).googleAuthManager()
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        scope.launch {
+            val idToken = authManager.handleLoginSignInResult(result.data)
+            if (idToken != null) {
+                vm.loginWithGoogle(idToken)
+            }
+            isLoading = false
+        }
+    }
+
+    OutlinedButton(
+        onClick = {
+            vm.clearError()
+            isLoading = true
+            launcher.launch(authManager.getLoginSignInIntent())
+        },
+        enabled = !isLoading,
+        modifier = Modifier.fillMaxWidth().height(50.dp)
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+        } else {
+            Icon(Icons.Default.AccountCircle, contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Continue with Google", fontWeight = FontWeight.SemiBold)
+        }
+    }
+}
+
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+private interface GoogleAuthEntryPoint {
+    fun googleAuthManager(): GoogleAuthManager
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

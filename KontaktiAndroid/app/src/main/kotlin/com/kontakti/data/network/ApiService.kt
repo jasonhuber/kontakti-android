@@ -80,6 +80,9 @@ interface ApiService {
         @Query("page") page: Int = 1
     ): Paginated<Company>
 
+    @POST("companies")
+    suspend fun createCompany(@Body body: CreateCompanyRequest): Company
+
     @GET("companies/{id}")
     suspend fun getCompany(@Path("id") id: String): Company
 

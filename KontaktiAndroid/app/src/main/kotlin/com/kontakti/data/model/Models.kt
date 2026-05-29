@@ -503,6 +503,15 @@ data class ImportResult(
     val skipped: Int
 )
 
+data class CreateCompanyRequest(
+    val name: String,
+    val domain: String? = null,
+    val industry: String? = null,
+    val website: String? = null,
+    @SerializedName("linkedin_url") val linkedinUrl: String? = null,
+    val notes: String? = null
+)
+
 data class CreatePersonRequest(
     @SerializedName("first_name") val firstName: String? = null,
     @SerializedName("last_name") val lastName: String? = null,
