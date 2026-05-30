@@ -127,6 +127,7 @@ dependencies {
 
     // Google Sign-In + APIs
     implementation(libs.google.auth)
+    implementation(libs.google.auth.library.oauth2)
     implementation(libs.google.api.client.android)
     implementation(libs.google.api.gmail)
     implementation(libs.google.api.people)
@@ -141,6 +142,9 @@ dependencies {
     // Glance (Jetpack home-screen widgets)
     implementation(libs.glance.appwidget)
     implementation(libs.glance.material3)
+
+    // ZXing (QR code generation)
+    implementation(libs.zxing.core)
 
     debugImplementation(libs.compose.ui.tooling)
 }

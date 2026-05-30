@@ -46,7 +46,9 @@ import com.kontakti.ui.screens.people.PersonEditScreen
 import com.kontakti.ui.screens.quiz.QuizSessionScreen
 import com.kontakti.ui.screens.review.ReviewContactsScreen
 import com.kontakti.ui.screens.search.NaturalSearchScreen
+import com.kontakti.ui.screens.settings.QRPairingScreen
 import com.kontakti.ui.screens.settings.SettingsScreen
+import com.kontakti.ui.screens.settings.SyncDirectionScreen
 import com.kontakti.ui.screens.today.TodayScreen
 import com.kontakti.ui.screens.voice.VoiceRecorderScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -96,6 +98,9 @@ object Routes {
     const val IMPORT_PHONE = "import/phone"
     const val IMPORT_GMAIL = "import/gmail"
     const val IMPORT_LINKEDIN = "import/linkedin"
+
+    const val QR_PAIRING = "settings/qr-pairing"
+    const val SYNC_DIRECTION = "settings/sync-direction"
 
     fun personDetail(id: String) = "person/$id"
     fun personEdit(id: String) = "person/$id/edit"
@@ -248,7 +253,16 @@ private fun MainNavigation(onSignedOut: () -> Unit) {
                     onLinkGoogle = { /* TODO: launch Google sign-in for new account */ },
                     onSignedOut = onSignedOut,
                     onOpenActivity = { nav.navigate(Routes.FEED) },
-                    onOpenReview = { nav.navigate(Routes.REVIEW_CONTACTS) }
+                    onOpenReview = { nav.navigate(Routes.REVIEW_CONTACTS) },
+                    onOpenQRPairing = { nav.navigate(Routes.QR_PAIRING) },
+                    onOpenSyncDirection = { nav.navigate(Routes.SYNC_DIRECTION) },
+                    onResetOnboarding = {
+                        nav.navigate(Routes.TODAY) {
+                            popUpTo(Routes.TODAY) { inclusive = true }
+                        }
+                        // AuthViewModel observes onboardedFlow; clearing it causes NeedsOnboarding state,
+                        // which KontaktiAppRoot redirects to OnboardingScreen automatically.
+                    }
                 )
             }
 
@@ -316,6 +330,13 @@ private fun MainNavigation(onSignedOut: () -> Unit) {
             composable(Routes.IMPORT_PHONE) { ImportContactsScreen(onBack = { nav.popBackStack() }) }
             composable(Routes.IMPORT_GMAIL) { GmailImportScreen(onBack = { nav.popBackStack() }) }
             composable(Routes.IMPORT_LINKEDIN) { LinkedInImportScreen(onBack = { nav.popBackStack() }) }
+
+            composable(Routes.QR_PAIRING) {
+                QRPairingScreen(onBack = { nav.popBackStack() })
+            }
+            composable(Routes.SYNC_DIRECTION) {
+                SyncDirectionScreen(onBack = { nav.popBackStack() })
+            }
         }
     }
 }

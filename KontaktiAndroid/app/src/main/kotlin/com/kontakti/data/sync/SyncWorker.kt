@@ -8,11 +8,13 @@ import com.kontakti.data.local.PendingSyncEntity
 import com.kontakti.data.local.SyncOperation
 import com.kontakti.data.model.CreateDiscussionRequest
 import com.kontakti.data.network.ApiService
+import com.kontakti.data.datastore.TokenStore
 import com.kontakti.data.repository.PeopleRepository
 import com.kontakti.data.repository.CompanyRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 @HiltWorker
@@ -23,25 +25,32 @@ class SyncWorker @AssistedInject constructor(
     private val api: ApiService,
     private val gson: Gson,
     private val peopleRepo: PeopleRepository,
-    private val companyRepo: CompanyRepository
+    private val companyRepo: CompanyRepository,
+    private val tokenStore: TokenStore
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
-        val pending = syncQueue.getPending()
+        val direction = tokenStore.syncDirectionFlow.first()
         var anyFailed = false
 
-        for (item in pending) {
-            val success = processSyncItem(item)
-            if (success) {
-                syncQueue.remove(item)
-            } else {
-                anyFailed = true
+        // Upload phase: flush pending local mutations to server
+        if (direction != SyncDirection.DOWNLOAD_ONLY) {
+            val pending = syncQueue.getPending()
+            for (item in pending) {
+                val success = processSyncItem(item)
+                if (success) {
+                    syncQueue.remove(item)
+                } else {
+                    anyFailed = true
+                }
             }
         }
 
-        // After flushing mutations, refresh caches
-        peopleRepo.refresh()
-        companyRepo.refresh()
+        // Download phase: refresh local caches from server
+        if (direction != SyncDirection.UPLOAD_ONLY) {
+            peopleRepo.refresh()
+            companyRepo.refresh()
+        }
 
         if (anyFailed) Result.retry() else Result.success()
     }

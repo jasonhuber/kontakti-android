@@ -24,11 +24,14 @@ import com.kontakti.data.datastore.TokenStore
 import com.kontakti.data.model.GoogleAccount
 import com.kontakti.data.repository.GoogleAccountsRepository
 import com.kontakti.data.repository.PushRepository
+import com.kontakti.data.sync.SyncDirection
 import com.kontakti.ui.components.SectionHeader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,6 +46,9 @@ class SettingsViewModel @Inject constructor(
 
     private val _notificationsEnabled = MutableStateFlow(true)
     val notificationsEnabled: StateFlow<Boolean> = _notificationsEnabled.asStateFlow()
+
+    val syncDirection: StateFlow<SyncDirection> = tokenStore.syncDirectionFlow
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SyncDirection.TWO_WAY)
 
     init { loadAccounts() }
 
@@ -81,6 +87,13 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+
+    fun resetOnboarding(onDone: () -> Unit) {
+        viewModelScope.launch {
+            tokenStore.clearOnboarded()
+            onDone()
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,10 +107,14 @@ fun SettingsScreen(
     onSignedOut: () -> Unit = {},
     onOpenActivity: () -> Unit = {},
     onOpenReview: () -> Unit = {},
+    onOpenQRPairing: () -> Unit = {},
+    onOpenSyncDirection: () -> Unit = {},
+    onResetOnboarding: () -> Unit = {},
     vm: SettingsViewModel = hiltViewModel()
 ) {
     val accounts by vm.accounts.collectAsState()
     val notifications by vm.notificationsEnabled.collectAsState()
+    val syncDirection by vm.syncDirection.collectAsState()
     val notifPermLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         vm.setNotifications(granted, fcmTokenProvider())
     }
@@ -130,6 +147,16 @@ fun SettingsScreen(
             item { SettingsRow("Duplicates", Icons.Default.ContentCopy, onClick = onOpenDuplicates) }
             item { SettingsRow("Review contacts", Icons.AutoMirrored.Filled.FactCheck, onClick = onOpenReview) }
 
+            item { SectionHeader("Sync") }
+            item {
+                SettingsRowWithValue(
+                    label = "Sync direction",
+                    value = syncDirection.label,
+                    icon = Icons.Default.SyncAlt,
+                    onClick = onOpenSyncDirection
+                )
+            }
+
             item { SectionHeader("Notifications") }
             item {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
@@ -148,7 +175,12 @@ fun SettingsScreen(
             }
 
             item { SectionHeader("Account") }
+            item { SettingsRow("QR pairing", Icons.Default.QrCode, onClick = onOpenQRPairing) }
             item { SettingsRow("Sign out", Icons.AutoMirrored.Filled.ExitToApp, onClick = { vm.signOut(onSignedOut) }) }
+
+            item { SectionHeader("Advanced") }
+            item { SettingsRow("Setup wizard", Icons.Default.Tune, onClick = { vm.resetOnboarding(onResetOnboarding) }) }
+
             item { Spacer(Modifier.height(32.dp)) }
         }
     }
@@ -163,6 +195,26 @@ private fun SettingsRow(label: String, icon: androidx.compose.ui.graphics.vector
         Icon(icon, contentDescription = null)
         Spacer(Modifier.width(12.dp))
         Text(label, modifier = Modifier.weight(1f))
+        Icon(Icons.Default.ChevronRight, contentDescription = null)
+    }
+}
+
+@Composable
+private fun SettingsRowWithValue(
+    label: String,
+    value: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit
+) {
+    Row(
+        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+    ) {
+        Icon(icon, contentDescription = null)
+        Spacer(Modifier.width(12.dp))
+        Text(label, modifier = Modifier.weight(1f))
+        Text(value, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f))
+        Spacer(Modifier.width(4.dp))
         Icon(Icons.Default.ChevronRight, contentDescription = null)
     }
 }
