@@ -134,6 +134,10 @@ fun PersonEditScreen(
     var notes by remember { mutableStateOf(p.notes.orEmpty()) }
     var strength by remember { mutableStateOf(p.relationshipStrength) }
 
+    var cadence by remember { mutableStateOf(p.contactCadence ?: "biannual") }
+    var onBirthday by remember { mutableStateOf(p.contactOnBirthday ?: true) }
+    var onHolidays by remember { mutableStateOf(p.contactOnHolidays ?: false) }
+
     var linkedinUrl by remember { mutableStateOf(p.linkedinUrl.orEmpty()) }
     var facebookUrl by remember { mutableStateOf(p.facebookUrl.orEmpty()) }
     var instagram by remember { mutableStateOf(p.instagramHandle.orEmpty()) }
@@ -214,6 +218,9 @@ fun PersonEditScreen(
                                 country = country.takeIf { it != p.country.orEmpty() },
                                 howWeMet = howWeMet.takeIf { it != p.howWeMet.orEmpty() },
                                 relationshipStrength = strength.name.takeIf { strength != p.relationshipStrength },
+                                contactCadence = cadence,
+                                contactOnBirthday = onBirthday,
+                                contactOnHolidays = onHolidays,
                                 notes = notes.takeIf { it != p.notes.orEmpty() },
                                 email = primaryEmail.takeIf { it != p.email.orEmpty() },
                                 phone = primaryPhone.takeIf { it != p.phone.orEmpty() },
@@ -251,6 +258,32 @@ fun PersonEditScreen(
                     )
                     Spacer(Modifier.width(6.dp))
                 }
+            }
+
+            SectionHeader("Stay in touch")
+            Row(Modifier.padding(horizontal = 16.dp)) {
+                listOf("monthly" to "1mo", "quarterly" to "3mo", "biannual" to "6mo", "annual" to "1yr", "none" to "Off").forEach { (value, lbl) ->
+                    FilterChip(
+                        selected = cadence == value,
+                        onClick = { cadence = value },
+                        label = { Text(lbl) }
+                    )
+                    Spacer(Modifier.width(6.dp))
+                }
+            }
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Remind on birthday", Modifier.weight(1f))
+                Switch(checked = onBirthday, onCheckedChange = { onBirthday = it })
+            }
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Remind around holidays", Modifier.weight(1f))
+                Switch(checked = onHolidays, onCheckedChange = { onHolidays = it })
             }
 
             SectionHeader("Emails")
